@@ -1,21 +1,30 @@
 import express from "express";
-import cors from "cors";
 
 const app = express();
 
-app.use(
-  cors({
-    origin: "*",
-  })
-);
+app.use((req, res, next) => {
+  const isAuthenticated = true;
+
+  if (isAuthenticated) {
+    next();
+  } else {
+    return res.status(401).json({
+      message: "Unauthorized",
+    });
+  }
+});
 
 app.get("/", (req, res) => {
-  // This is where all the logic is
-
   res.json({
     name: "John Wick",
     message: "GET Request Received on home route",
   });
+});
+
+app.use((req, res, next) => {
+  console.log("I have passed through SECOND middleware");
+
+  next();
 });
 
 app.post("/", (req, res) => {
@@ -24,12 +33,6 @@ app.post("/", (req, res) => {
   });
 });
 
-app.get("/students/:studentId/devices", (req, res) => {
-  console.log(req);
-
-  res.json({
-    message: "Received",
-  });
-});
-
-app.listen(3005); //localhost:3005
+app.listen(3005, () => {
+  console.log("The server is running on port 3005");
+}); //localhost:3005
